@@ -13,7 +13,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/signup
 // @access  Public
 const registerUser = async (req, res) => {
-    const { name, email, password, occupation, incomeRhythm, financialGoals } = req.body;
+    const { name, email, password, occupation, incomeDetails, financialGoals } = req.body;
 
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Please add all required fields' });
@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
         email,
         password,
         occupation,
-        incomeRhythm,
+        incomeDetails,
         financialGoals,
     });
 

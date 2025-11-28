@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/transactions', require('./routes/transactionRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Sahayogi API is running');

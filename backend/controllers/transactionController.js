@@ -32,6 +32,8 @@ const setTransaction = async (req, res) => {
             category: req.body.category,
             description: req.body.description,
             date: req.body.date,
+            isRecurring: req.body.isRecurring || false,
+            source: req.body.source || 'manual'
         });
 
         res.status(200).json(transaction);
@@ -110,9 +112,40 @@ const deleteTransaction = async (req, res) => {
     }
 };
 
+// @desc    Simulate Bank Sync
+// @route   POST /api/transactions/simulate
+// @access  Private
+const simulateBankSync = async (req, res) => {
+    try {
+        // Mock data generation
+        const mockTransactions = [
+            { type: 'expense', amount: 50, category: 'Food', description: 'Grocery Store', source: 'bank_sync' },
+            { type: 'expense', amount: 1200, category: 'Rent', description: 'Monthly Rent', source: 'bank_sync', isRecurring: true },
+            { type: 'income', amount: 3000, category: 'Salary', description: 'Freelance Project', source: 'bank_sync' },
+            { type: 'expense', amount: 30, category: 'Transport', description: 'Uber Ride', source: 'bank_sync' },
+            { type: 'expense', amount: 15, category: 'Entertainment', description: 'Netflix Subscription', source: 'bank_sync', isRecurring: true }
+        ];
+
+        const createdTransactions = [];
+        for (const t of mockTransactions) {
+            const transaction = await Transaction.create({
+                user: req.user.id,
+                ...t,
+                date: new Date() // Current time for "Real Time" feel
+            });
+            createdTransactions.push(transaction);
+        }
+
+        res.status(200).json(createdTransactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getTransactions,
     setTransaction,
     updateTransaction,
     deleteTransaction,
+    simulateBankSync
 };

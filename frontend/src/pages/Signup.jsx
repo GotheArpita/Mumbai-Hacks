@@ -36,8 +36,22 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        const payload = {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            occupation: formData.occupation,
+            financialGoals: formData.financialGoals,
+            incomeDetails: {
+                amount: Number(formData.incomeAmount),
+                frequency: formData.incomeRhythm,
+                source: formData.incomeSource
+            }
+        };
+
         try {
-            await signup(formData);
+            await signup(payload);
             navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Signup failed');
@@ -133,7 +147,31 @@ const Signup = () => {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="incomeRhythm" className="block text-sm font-medium text-gray-700">Income Rhythm</label>
+                                <label htmlFor="incomeAmount" className="block text-sm font-medium text-gray-700">Estimated Monthly Income (₹)</label>
+                                <input
+                                    id="incomeAmount"
+                                    name="incomeAmount"
+                                    type="number"
+                                    placeholder="e.g. 25000"
+                                    className="input-field mt-1"
+                                    value={formData.incomeAmount || ''}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="incomeSource" className="block text-sm font-medium text-gray-700">Primary Income Source</label>
+                                <input
+                                    id="incomeSource"
+                                    name="incomeSource"
+                                    type="text"
+                                    placeholder="e.g. Uber, Freelancing, Salary"
+                                    className="input-field mt-1"
+                                    value={formData.incomeSource || ''}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="incomeRhythm" className="block text-sm font-medium text-gray-700">Income Frequency</label>
                                 <select
                                     id="incomeRhythm"
                                     name="incomeRhythm"
@@ -155,8 +193,8 @@ const Signup = () => {
                                             key={goal}
                                             onClick={() => handleGoalChange(goal)}
                                             className={`p-3 border rounded-lg cursor-pointer flex items-center justify-between transition-colors ${formData.financialGoals.includes(goal)
-                                                    ? 'bg-primary-50 border-primary-500 text-primary-700'
-                                                    : 'bg-white border-gray-300 hover:bg-gray-50'
+                                                ? 'bg-primary-50 border-primary-500 text-primary-700'
+                                                : 'bg-white border-gray-300 hover:bg-gray-50'
                                                 }`}
                                         >
                                             <span>{goal}</span>
