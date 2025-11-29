@@ -17,7 +17,14 @@ const getFinancialAdvice = async (req, res) => {
     User Question:
     ${message}
     
-    Provide a concise, actionable, and empathetic response. Focus on the 33-33-33 rule if applicable.
+    Instructions:
+    1. Provide a concise, actionable, and empathetic response.
+    2. Use Markdown formatting for readability:
+       - Use **bold** for key terms or numbers.
+       - Use bullet points for lists or steps.
+    3. Keep paragraphs short and easy to read.
+    4. Focus on the 33-33-33 rule if applicable (33% essentials, 33% savings, 33% discretionary).
+    5. Do not use complex financial jargon.
     `;
 
     try {

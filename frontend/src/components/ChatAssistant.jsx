@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import api from '../services/api';
 
 const ChatAssistant = () => {
@@ -83,12 +84,28 @@ const ChatAssistant = () => {
                                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-[80%] p-3 rounded-lg text-sm ${msg.role === 'user'
-                                            ? 'bg-primary-600 text-white rounded-br-none'
-                                            : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'
+                                    className={`max-w-[85%] p-3 rounded-lg text-sm ${msg.role === 'user'
+                                        ? 'bg-primary-600 text-white rounded-br-none'
+                                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'
                                         }`}
                                 >
-                                    {msg.content}
+                                    {msg.role === 'user' ? (
+                                        msg.content
+                                    ) : (
+                                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
+                                            <ReactMarkdown
+                                                components={{
+                                                    p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                                                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                                                    strong: ({ node, ...props }) => <span className="font-bold" {...props} />,
+                                                }}
+                                            >
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
