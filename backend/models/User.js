@@ -20,7 +20,6 @@ const UserSchema = new mongoose.Schema({
     },
     occupation: {
         type: String,
-        enum: ['Student', 'Gig Worker', 'Professional', 'Other'],
         default: 'Other'
     },
     incomeDetails: {

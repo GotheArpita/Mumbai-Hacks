@@ -33,7 +33,9 @@ const registerUser = async (req, res) => {
         password,
         occupation,
         incomeDetails,
-        financialGoals,
+        financialGoals: financialGoals ? financialGoals.map(goal =>
+            typeof goal === 'string' ? { title: goal } : goal
+        ) : [],
     });
 
     if (user) {
