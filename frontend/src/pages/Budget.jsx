@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { PieChart, TrendingUp, AlertCircle } from 'lucide-react';
+import { PieChart, TrendingUp, Plus, Trash2 } from 'lucide-react';
 
 const Budget = () => {
     const [summary, setSummary] = useState({ income: 0, expense: 0, balance: 0 });
     const [loading, setLoading] = useState(true);
+    // Placeholder for fixed expenses until backend support is added
+    const [fixedExpenses, setFixedExpenses] = useState([
+        { id: 1, name: 'Rent', amount: 12000 },
+        { id: 2, name: 'Netflix', amount: 499 },
+    ]);
 
-    // Fetch transactions to calculate budget
     const fetchSummary = async () => {
         try {
             const res = await api.get('/transactions');
@@ -31,67 +35,91 @@ const Budget = () => {
 
     // 33-33-33 Rule Calculations
     const rule33 = {
-        needs: summary.income * 0.33,
-        wants: summary.income * 0.33,
-        savings: summary.income * 0.33,
+        needs: Math.round(summary.income * 0.33),
+        wants: Math.round(summary.income * 0.33),
+        savings: Math.round(summary.income * 0.33),
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-20">
             <h2 className="text-2xl font-bold text-gray-900">Budget & Planning</h2>
 
-            {/* 33-33-33 Rule Widget */}
+            {/* Visual 33-33-33 Rule */}
             <div className="card">
-                <div className="flex items-center space-x-2 mb-4">
+                <div className="flex items-center space-x-2 mb-6">
                     <PieChart className="h-6 w-6 text-primary-600" />
-                    <h3 className="text-lg font-bold text-gray-900">33-33-33 Budget Rule</h3>
+                    <h3 className="text-lg font-bold text-gray-900">33-33-33 Rule Visualization</h3>
                 </div>
 
-                <div className="space-y-6">
-                    <div>
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-700 font-medium">Needs (Rent, Bills, Food)</span>
-                            <span className="font-bold text-blue-600">Target: ₹{rule33.needs.toLocaleString()}</span>
+                <div className="flex flex-col md:flex-row items-center justify-around space-y-6 md:space-y-0">
+                    {/* CSS Pie Chart */}
+                    <div className="relative w-48 h-48 rounded-full"
+                        style={{
+                            background: `conic-gradient(
+                                #3B82F6 0% 33%, 
+                                #A855F7 33% 66%, 
+                                #22C55E 66% 100%
+                            )`
+                        }}
+                    >
+                        <div className="absolute inset-4 bg-white rounded-full flex flex-col items-center justify-center text-center">
+                            <span className="text-xs text-gray-500">Total Income</span>
+                            <span className="font-bold text-gray-900">₹{summary.income.toLocaleString()}</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-3">
-                            <div className="bg-blue-500 h-3 rounded-full" style={{ width: '33%' }}></div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">Essentials that you cannot live without.</p>
                     </div>
 
-                    <div>
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-700 font-medium">Wants (Entertainment, Dining)</span>
-                            <span className="font-bold text-purple-600">Target: ₹{rule33.wants.toLocaleString()}</span>
+                    {/* Legend / Details */}
+                    <div className="space-y-4 w-full md:w-1/2">
+                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span className="font-medium text-gray-700">Needs (33%)</span>
+                            </div>
+                            <span className="font-bold text-blue-700">₹{rule33.needs.toLocaleString()}</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-3">
-                            <div className="bg-purple-500 h-3 rounded-full" style={{ width: '33%' }}></div>
+                        <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                <span className="font-medium text-gray-700">Wants (33%)</span>
+                            </div>
+                            <span className="font-bold text-purple-700">₹{rule33.wants.toLocaleString()}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Things that make life enjoyable but aren't essential.</p>
-                    </div>
-
-                    <div>
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-700 font-medium">Savings & Investments</span>
-                            <span className="font-bold text-green-600">Target: ₹{rule33.savings.toLocaleString()}</span>
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span className="font-medium text-gray-700">Savings (33%)</span>
+                            </div>
+                            <span className="font-bold text-green-700">₹{rule33.savings.toLocaleString()}</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-3">
-                            <div className="bg-green-500 h-3 rounded-full" style={{ width: '33%' }}></div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">Future security and financial goals.</p>
                     </div>
                 </div>
             </div>
 
-            {/* Fixed Expenses Section (Placeholder for now) */}
-            <div className="card border-l-4 border-primary-500">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Fixed Expenses</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                    Track your recurring monthly payments like Rent, Netflix, Gym, etc.
-                </p>
-                <button className="btn-secondary text-sm w-full sm:w-auto">
-                    + Add Recurring Expense
-                </button>
+            {/* Fixed Expenses */}
+            <div className="card">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold text-gray-900">Fixed Expenses</h3>
+                    <button className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
+                        <Plus className="h-4 w-4 mr-1" /> Add
+                    </button>
+                </div>
+                <div className="space-y-3">
+                    {fixedExpenses.map((expense) => (
+                        <div key={expense.id} className="flex justify-between items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+                            <span className="font-medium text-gray-800">{expense.name}</span>
+                            <div className="flex items-center space-x-4">
+                                <span className="font-bold text-gray-900">₹{expense.amount.toLocaleString()}</span>
+                                <button className="text-gray-400 hover:text-red-500">
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    <div className="pt-2 border-t border-gray-100 flex justify-between text-sm text-gray-500">
+                        <span>Total Fixed</span>
+                        <span>₹{fixedExpenses.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}</span>
+                    </div>
+                </div>
             </div>
 
             {/* Insights */}
@@ -99,10 +127,10 @@ const Budget = () => {
                 <div className="flex items-start space-x-3">
                     <TrendingUp className="h-6 w-6 text-secondary-600 mt-1" />
                     <div>
-                        <h3 className="text-lg font-bold text-secondary-900 mb-2">Sahayogi Financial Advice</h3>
+                        <h3 className="text-lg font-bold text-secondary-900 mb-2">Analysis</h3>
                         <p className="text-gray-700 text-sm leading-relaxed">
-                            Based on your income of <strong>₹{summary.income.toLocaleString()}</strong>, you should aim to save at least <strong>₹{(summary.income * 0.2).toLocaleString()}</strong> (20%) per month.
-                            The 33-33-33 rule is a great starting point, but feel free to adjust it to 50-30-20 (Needs-Wants-Savings) if that fits your lifestyle better!
+                            Your fixed expenses are <strong>{Math.round((fixedExpenses.reduce((acc, curr) => acc + curr.amount, 0) / summary.income) * 100)}%</strong> of your income.
+                            Ideally, keep "Needs" under 50% (or 33% if following the strict rule).
                         </p>
                     </div>
                 </div>

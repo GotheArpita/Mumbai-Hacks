@@ -94,40 +94,6 @@ const CashFlow = () => {
                     </div>
                 </div>
             )}
-
-            {/* Recent Activity Preview */}
-            <div className="card">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-gray-900">Recent Activity</h3>
-                    <a href="/transactions" className="text-sm text-primary-600 hover:text-primary-700 font-medium">View All</a>
-                </div>
-                <div className="space-y-4">
-                    {recentTransactions.length > 0 ? (
-                        recentTransactions.map((t) => (
-                            <div key={t._id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100">
-                                <div className="flex items-center space-x-3">
-                                    <div className={`p-2 rounded-full ${t.type === 'income' ? 'bg-green-100' : 'bg-red-100'}`}>
-                                        {t.type === 'income' ? (
-                                            <ArrowUpRight className={`h-4 w-4 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`} />
-                                        ) : (
-                                            <ArrowDownRight className={`h-4 w-4 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`} />
-                                        )}
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-gray-900">{t.description || t.category}</p>
-                                        <p className="text-xs text-gray-500">{new Date(t.date).toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                                <span className={`font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                                    {t.type === 'income' ? '+' : '-'} ₹{t.amount.toLocaleString()}
-                                </span>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-500 py-4">No recent transactions</p>
-                    )}
-                </div>
-            </div>
         </div>
     );
 };

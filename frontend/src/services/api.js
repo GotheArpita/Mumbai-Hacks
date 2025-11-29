@@ -21,4 +21,9 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// Attach auth methods to the api instance to maintain compatibility
+api.login = (data) => api.post('/auth/login', data);
+api.getMe = () => api.get('/auth/me');
+api.updateProfile = (data) => api.put('/auth/profile', data);
+
 export default api;
