@@ -78,12 +78,34 @@ const Dashboard = () => {
         }
     };
 
-    // 33-33-33 Rule Calculations
+    // 33-33-33 Rule Calculations (use same adaptive rule if saved)
+    const storedRule = (() => {
+        try {
+            const val = localStorage.getItem('budgetRulePercents');
+            return val ? JSON.parse(val) : null;
+        } catch {
+            return null;
+        }
+    })();
+
+    const rulePercents = storedRule || { needs: 33, wants: 33, savings: 34 };
+
     const rule33 = {
-        needs: summary.income * 0.33,
-        wants: summary.income * 0.33,
-        savings: summary.income * 0.33,
+        needs: (summary.income * rulePercents.needs) / 100,
+        wants: (summary.income * rulePercents.wants) / 100,
+        savings: (summary.income * rulePercents.savings) / 100,
     };
+
+    const totalFixed = (() => {
+        try {
+            const storedFixed = localStorage.getItem('fixedExpenses');
+            const parsed = storedFixed ? JSON.parse(storedFixed) : [];
+            if (!Array.isArray(parsed)) return 0;
+            return parsed.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+        } catch {
+            return 0;
+        }
+    })();
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -211,13 +233,20 @@ const Dashboard = () => {
                             </div>
                         </div>
 
+                        {/* Analysis moved from Budget */}
                         <div className="card bg-secondary-50 border-secondary-100">
-                            <h3 className="text-lg font-bold text-secondary-900 mb-4">Sahayogi Insights</h3>
-                            <div className="p-4 bg-white rounded-lg border border-secondary-100 shadow-sm">
-                                <p className="text-gray-700">
-                                    👋 Welcome to Sahayogi! Start adding your transactions to get personalized financial advice.
-                                </p>
-                            </div>
+                            <h3 className="text-lg font-bold text-secondary-900 mb-2">Analysis</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                                Your fixed / committed bills currently take up{' '}
+                                <strong>
+                                    {summary.income > 0
+                                        ? Math.round((totalFixed / summary.income) * 100)
+                                        : 0}
+                                    %
+                                </strong>{' '}
+                                of your income. When this goes high or you fall behind on payments, focus more of your
+                                budget on Needs and temporarily cut Wants until you are back on track.
+                            </p>
                         </div>
                     </div>
                 </div>

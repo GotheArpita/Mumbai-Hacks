@@ -92,6 +92,21 @@ const Goals = () => {
         handleSaveGoals(updatedGoals);
     };
 
+    const handleQuickAddAmount = (index, amountToAdd) => {
+        const value = Number(amountToAdd);
+        if (!value) return;
+        const updatedGoals = goals.map((g, i) =>
+            i === index ? { ...g, currentAmount: Number(g.currentAmount || 0) + value } : g
+        );
+        handleSaveGoals(updatedGoals);
+    };
+
+    const handleQuickAddPrompt = (index) => {
+        const input = window.prompt('How much would you like to add to this goal? (₹)');
+        if (input == null) return;
+        handleQuickAddAmount(index, input);
+    };
+
     return (
         <div className="space-y-6 pb-20">
             <div className="flex justify-between items-center">
@@ -210,9 +225,18 @@ const Goals = () => {
                                     style={{ width: `${goal.targetAmount > 0 ? Math.min((goal.currentAmount / goal.targetAmount) * 100, 100) : 0}%` }}
                                 ></div>
                             </div>
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>₹{goal.currentAmount?.toLocaleString()} saved</span>
-                                <span>₹{Math.max(goal.targetAmount - goal.currentAmount, 0)?.toLocaleString()} to go</span>
+                            <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
+                                <div className="flex flex-col">
+                                    <span>₹{goal.currentAmount?.toLocaleString()} saved</span>
+                                    <span>₹{Math.max(goal.targetAmount - goal.currentAmount, 0)?.toLocaleString()} to go</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleQuickAddPrompt(index)}
+                                    className="ml-4 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-[11px] font-semibold hover:bg-primary-100"
+                                >
+                                    + Add amount
+                                </button>
                             </div>
                         </div>
                     </div>

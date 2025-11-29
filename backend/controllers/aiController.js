@@ -24,27 +24,47 @@ const getFinancialAdvice = async (req, res) => {
         let responseText = "";
 
         if (process.env.GEMINI_API_KEY) {
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            responseText = response.text();
-        } else if (process.env.OPENAI_API_KEY) {
-            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-            const completion = await openai.chat.completions.create({
-                messages: [{ role: "system", content: prompt }],
-                model: "gpt-3.5-turbo",
-            });
-            responseText = completion.choices[0].message.content;
-        } else {
-            // Fallback if no key provided (for testing/demo without key)
-            responseText = "I'm sorry, but I can't connect to my AI brain right now. Please ensure the API key is set up in the backend.";
+            try {
+                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                // Use a stable, generally available model name
+                const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                responseText = response.text();
+            } catch (geminiError) {
+                console.error("Gemini Error:", geminiError);
+            }
+        }
+
+        // Fallback to OpenAI if Gemini failed or is not configured
+        if (!responseText && process.env.OPENAI_API_KEY) {
+            try {
+                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+                const completion = await openai.chat.completions.create({
+                    messages: [{ role: "system", content: prompt }],
+                    model: "gpt-3.5-turbo",
+                });
+                responseText = completion.choices[0].message.content;
+            } catch (openAiError) {
+                console.error("OpenAI Error:", openAiError);
+            }
+        }
+
+        if (!responseText) {
+            // Final friendly fallback – never throw a 500 to the client
+            responseText =
+                "I'm sorry, but I couldn't reach my AI brain right now. You can still follow the 33-33-33 rule: keep essentials in one part, fun in another, and save the rest.";
         }
 
         res.status(200).json({ message: responseText });
     } catch (error) {
-        console.error("AI Error:", error);
-        res.status(500).json({ message: "Failed to generate advice." });
+        console.error("AI Error (outer):", error);
+        res
+            .status(200)
+            .json({
+                message:
+                    "I'm having trouble connecting to the AI service, but you can start by tracking your income and expenses regularly. Try to keep expenses below your income each month.",
+            });
     }
 };
 
